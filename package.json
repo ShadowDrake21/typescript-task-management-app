@@ -188,6 +188,7 @@
     "type-check": "^0.4.0",
     "type-fest": "^0.20.2",
     "uri-js": "^4.4.1",
+    "uuid": "^10.0.0",
     "validate-npm-package-license": "^3.0.4",
     "which": "^2.0.2",
     "word-wrap": "^1.2.5",
@@ -204,6 +205,7 @@
   "author": "Dmytro Krapyvianskiy a.k.a Drake21",
   "license": "MIT",
   "devDependencies": {
+    "@types/uuid": "^9.0.8",
     "gts": "^5.3.1",
     "html-webpack-plugin": "^5.6.0",
     "ts-loader": "^9.5.1",
