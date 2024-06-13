@@ -198,12 +198,17 @@
     "yocto-queue": "^0.1.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack serve --open",
+    "build": "webpack"
   },
   "author": "Dmytro Krapyvianskiy a.k.a Drake21",
   "license": "MIT",
   "devDependencies": {
     "gts": "^5.3.1",
-    "typescript": "^5.4.5"
+    "html-webpack-plugin": "^5.6.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
   }
 }
