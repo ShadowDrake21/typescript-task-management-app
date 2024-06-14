@@ -24,10 +24,8 @@ export function renderForm() {
   <input type="date" class="form-control" id="input-date" min="${new Date().toISOString().split('T')[0]}"  required/>
   </div>
   <input type="text" class="task-manager__form-input form-control" id="input-category" required placeholder="Enter a task category..." />
- <div class="task-manager__form-btns">
-  <button class="btn btn-success d-flex align-items-center" type="submit" id="form-add" name="action">Add task<i class="material-icons right ms-2">add_circle</i></button>
-  <button class="btn btn-danger d-flex align-items-center" type="submit" id="form-cancel" name="action">Cancel<i class="material-icons right ms-2">close</i></button>
-  </div>
+ <button class="btn btn-success d-flex align-items-center justify-content-center" type="submit" id="form-add" name="action">Add task<i class="material-icons right ms-2">add_circle</i></button>
+ <button class="btn btn-danger d-flex align-items-center justify-content-center" type="submit" id="form-cancel" name="action">Cancel<i class="material-icons right ms-2">close</i></button>
   </div>
  `;
 
@@ -73,6 +71,7 @@ export function renderNewTask(newTask: ITask) {
     } else {
       const newTaskTable = document.createElement('div');
       newTaskTable.id = 'task-table';
+      newTaskTable.classList.add('mt-4');
 
       const newTaskEl = createNewTaskElement(newTask);
       console.log('newTaskEl', newTaskEl);
@@ -103,6 +102,35 @@ export function toggleDateDisabled(dateCheckEl: HTMLInputElement) {
     } else {
       inputDateEl.value = new Date().toISOString().split('T')[0];
     }
+  }
+}
+
+export function disableForm() {
+  const form = document.querySelector('#task-form') as HTMLFormElement;
+  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
+  const descriptionEl = form.querySelector('#input-desc') as HTMLInputElement;
+  const dateEl = form.querySelector('#input-date') as HTMLInputElement;
+  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
+  const addBtn = form.querySelector('#form-add') as HTMLButtonElement;
+  const cancelBtn = form.querySelector('#form-cancel') as HTMLButtonElement;
+
+  if (titleEl) {
+    titleEl.disabled = true;
+  }
+  if (descriptionEl) {
+    descriptionEl.disabled = true;
+  }
+  if (dateEl) {
+    dateEl.disabled = true;
+  }
+  if (categoryEl) {
+    categoryEl.disabled = true;
+  }
+  if (addBtn) {
+    addBtn.disabled = true;
+  }
+  if (cancelBtn) {
+    cancelBtn.disabled = true;
   }
 }
 

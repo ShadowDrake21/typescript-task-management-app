@@ -8,30 +8,57 @@ import { ITask } from '../models/taskModel';
 
 export function createNewTaskElement(newTask: ITask): HTMLDivElement {
   const taskDiv = document.createElement('div');
+  taskDiv.classList.add(
+    'single-task',
+    'd-flex',
+    'p-3',
+    'text-dark',
+    'mt-3',
+    'mb-3'
+  );
   taskDiv.id = newTask.id;
 
+  const taskContent = document.createElement('div');
+  taskContent.classList.add(
+    'single-task__inner',
+    'w-100',
+    'd-flex',
+    'flex-column'
+  );
+
   const taskTitle = document.createElement('h3');
+  taskTitle.classList.add('single-task__title');
   taskTitle.textContent = newTask.title;
 
   const taskDesc = document.createElement('p');
+  taskDesc.classList.add('single-task__desc', 'mb-0', 'pb-2');
   taskDesc.textContent = newTask.description;
 
-  const taskDate = document.createElement('span');
-  taskDate.textContent =
-    newTask.date || 'The task does not have any time bounderies';
+  const taskDate = document.createElement('div');
+  taskDate.classList.add('single-task__date');
 
-  const taskCategory = document.createElement('p');
-  taskCategory.textContent = newTask.category;
+  taskDate.innerHTML = `<span class="fw-bold">Date: </span>${newTask.date || 'The task does not have any time bounderies'}`;
+
+  const taskCategory = document.createElement('div');
+  taskCategory.classList.add('single-task__cateogory');
+  taskCategory.innerHTML = `<span class="fw-bold">Category: </span>${newTask.category}`;
 
   const taskStatus = document.createElement('p');
+  taskStatus.classList.add('single-task__status');
   taskStatus.textContent = newTask.status ? 'complete' : 'incomplete';
 
   if (newTask.status) {
     taskTitle.classList.add('complete');
+    taskStatus.classList.add('task-complete');
+  } else {
+    taskStatus.classList.add('task-incomplete');
   }
 
+  const taskBtns = document.createElement('div');
+  taskBtns.classList.add('single-task__btns');
+
   const removeBtn = document.createElement('btn');
-  removeBtn.classList.add('btn', 'btn-danger');
+  removeBtn.classList.add('btn', 'btn-danger', 'single-task__btn');
   removeBtn.textContent = 'Remove';
 
   removeBtn.addEventListener('click', (event) => {
@@ -39,7 +66,7 @@ export function createNewTaskElement(newTask: ITask): HTMLDivElement {
   });
 
   const updateBtn = document.createElement('btn');
-  updateBtn.classList.add('btn', 'btn-primary');
+  updateBtn.classList.add('btn', 'btn-primary', 'single-task__btn');
   updateBtn.textContent = 'Update';
 
   updateBtn.addEventListener('click', (event) => {
@@ -47,7 +74,7 @@ export function createNewTaskElement(newTask: ITask): HTMLDivElement {
   });
 
   const checkDoneBtn = document.createElement('button');
-  checkDoneBtn.classList.add('btn', 'btn-success');
+  checkDoneBtn.classList.add('btn', 'btn-success', 'single-task__btn');
   checkDoneBtn.innerHTML = '&#10003;';
 
   checkDoneBtn.addEventListener('click', (event) => {
@@ -57,27 +84,24 @@ export function createNewTaskElement(newTask: ITask): HTMLDivElement {
 
     if (newTask.status) {
       taskTitle.classList.add('complete');
+
+      taskStatus.classList.remove('task-incomplete');
+      taskStatus.classList.add('task-complete');
     } else {
       taskTitle.classList.remove('complete');
+
+      taskStatus.classList.add('task-incomplete');
+      taskStatus.classList.remove('task-complete');
     }
 
     taskStatus.textContent = newTask.status ? 'complete' : 'incomplete';
   });
 
-  taskDiv.append(
-    taskTitle,
-    taskDesc,
-    taskDate,
-    taskCategory,
-    taskStatus,
-    removeBtn,
-    updateBtn,
-    checkDoneBtn
-  );
+  taskBtns.append(removeBtn, updateBtn, checkDoneBtn);
 
-  taskDiv.append(removeBtn);
-  taskDiv.append(updateBtn);
-  taskDiv.append(checkDoneBtn);
+  taskContent.append(taskTitle, taskDesc, taskDate, taskCategory, taskStatus);
+
+  taskDiv.append(taskContent, taskBtns);
 
   return taskDiv;
 }

@@ -1,6 +1,6 @@
 import { ITask } from '../models/taskModel';
 import { formReset, patchFormToUpdate } from '../utils/formUtils';
-import { clearTaskTable, renderNewTask } from './render';
+import { clearTaskTable, disableForm, renderNewTask } from './render';
 import { v4 as uuidv4 } from 'uuid';
 
 export function addTask(event: Event): void {
@@ -15,7 +15,10 @@ export function addTask(event: Event): void {
   const newTask: ITask = {
     id: uuidv4(),
     title: titleEl.value,
-    description: descriptionEl.value,
+    description:
+      descriptionEl.value.length > 300
+        ? descriptionEl.value.slice(0, 300) + '...'
+        : descriptionEl.value,
     category: categoryEl.value,
     status: false,
   };
@@ -27,6 +30,10 @@ export function addTask(event: Event): void {
   globalThis.tasks.push(newTask);
   formReset();
   renderNewTask(newTask);
+
+  if (globalThis.tasks.length === 9) {
+    disableForm();
+  }
 }
 
 export function preparationsToUpdateTask(id: string) {
