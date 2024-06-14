@@ -4,4 +4,5 @@ export interface ITask {
   description: string;
   date?: string;
   category: string;
+  status: boolean;
 }
