@@ -1,9 +1,18 @@
+import { FirebaseError } from 'firebase/app';
 import { ITask } from '../models/taskModel';
+import { setRecord, removeRecord } from '../services/tasksService';
 import { formReset, patchFormToUpdate } from '../utils/formUtils';
-import { clearTaskTable, disableForm, renderNewTask } from './render';
+import { getEmail } from './authorization';
+import {
+  clearTaskTable,
+  disableForm,
+  handleEmptyRoot,
+  renderNewTask,
+  renderTemporaryError,
+} from './render';
 import { v4 as uuidv4 } from 'uuid';
 
-export function addTask(event: Event): void {
+export async function addTask(event: Event): Promise<void> {
   const target = event.target as HTMLFormElement;
   const titleEl = target.querySelector('#input-title') as HTMLInputElement;
   const descriptionEl = target.querySelector('#input-desc') as HTMLInputElement;
@@ -28,12 +37,20 @@ export function addTask(event: Event): void {
   }
 
   globalThis.tasks.push(newTask);
-  formReset();
-  renderNewTask(newTask);
 
-  if (globalThis.tasks.length === 9) {
-    disableForm();
-  }
+  formReset();
+
+  await setRecord(getEmail(), newTask)
+    .then(() => {
+      renderNewTask(newTask);
+
+      if (globalThis.tasks.length === 9) {
+        disableForm();
+      }
+    })
+    .catch((err: FirebaseError) => {
+      renderTemporaryError(err.message);
+    });
 }
 
 export function preparationsToUpdateTask(id: string) {
@@ -84,6 +101,7 @@ export function updateTask(event: Event): void {
     globalThis.tasks[idx] = updatedTask;
 
     clearTaskTable();
+    setRecord(getEmail(), updatedTask);
     formReset();
 
     globalThis.tasks.forEach((task) => {
@@ -97,10 +115,15 @@ export function updateTask(event: Event): void {
 export function removeTask(id: string) {
   globalThis.tasks = globalThis.tasks.filter((task) => task.id !== id);
 
+  removeRecord(getEmail(), id);
+
   clearTaskTable();
   globalThis.tasks.forEach((task) => {
     renderNewTask(task);
   });
+  if (globalThis.tasks.length === 0) {
+    handleEmptyRoot();
+  }
 }
 
 export function toggleTaskCompleteness(id: string) {
@@ -108,6 +131,8 @@ export function toggleTaskCompleteness(id: string) {
 
   if (idx !== -1) {
     let doneTask = globalThis.tasks[idx];
-    globalThis.tasks[idx] = { ...doneTask, status: !doneTask.status };
+    doneTask = { ...doneTask, status: !doneTask.status };
+    globalThis.tasks[idx] = doneTask;
+    setRecord(getEmail(), doneTask);
   }
 }

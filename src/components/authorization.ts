@@ -55,6 +55,12 @@ export async function handleAuthorization() {
   }
 }
 
+export function getEmail() {
+  const user = retrieveFromLS('user') as User;
+
+  return user.email ?? 'unknown';
+}
+
 export function clearAuthData() {
   removeFromLS('user');
   removeFromLS('expireTime');
