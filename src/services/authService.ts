@@ -1,6 +1,5 @@
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import app from '../firebaseConfig';
-import { FirebaseError } from 'firebase/app';
 
 const auth = getAuth(app);
 

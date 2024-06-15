@@ -1,11 +1,15 @@
 import { FirebaseError } from 'firebase/app';
 import { ITask } from '../models/taskModel';
 import { setRecord, removeRecord } from '../services/tasksService';
-import { formReset, patchFormToUpdate } from '../utils/formUtils';
+import {
+  formReset,
+  patchFormToUpdate,
+  selectFormParts,
+} from '../utils/formUtils';
 import { getEmail } from './authorization';
 import {
   clearTaskTable,
-  disableForm,
+  toggledisableForm,
   handleEmptyRoot,
   renderNewTask,
   renderTemporaryError,
@@ -13,21 +17,15 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 export async function addTask(event: Event): Promise<void> {
-  const target = event.target as HTMLFormElement;
-  const titleEl = target.querySelector('#input-title') as HTMLInputElement;
-  const descriptionEl = target.querySelector('#input-desc') as HTMLInputElement;
-  const dateEl = target.querySelector('#input-date') as HTMLInputElement;
-  const categoryEl = target.querySelector(
-    '#input-category'
-  ) as HTMLInputElement;
+  const { titleEl, descEl, dateEl, categoryEl } = selectFormParts();
 
   const newTask: ITask = {
     id: uuidv4(),
     title: titleEl.value,
     description:
-      descriptionEl.value.length > 300
-        ? descriptionEl.value.slice(0, 300) + '...'
-        : descriptionEl.value,
+      descEl.value.length > 300
+        ? descEl.value.slice(0, 300) + '...'
+        : descEl.value,
     category: categoryEl.value,
     status: false,
   };
@@ -38,15 +36,15 @@ export async function addTask(event: Event): Promise<void> {
 
   globalThis.tasks.push(newTask);
 
+  if (globalThis.tasks.length === 9) {
+    toggledisableForm(true);
+  }
+
   formReset();
 
   await setRecord(getEmail(), newTask)
     .then(() => {
       renderNewTask(newTask);
-
-      if (globalThis.tasks.length === 9) {
-        disableForm();
-      }
     })
     .catch((err: FirebaseError) => {
       renderTemporaryError(err.message);
@@ -66,17 +64,10 @@ export function preparationsToUpdateTask(id: string) {
 }
 
 export function updateTask(event: Event): void {
-  const target = event.target as HTMLFormElement;
-  const idEl = target.querySelector('#input-id') as HTMLInputElement;
-  const titleEl = target.querySelector('#input-title') as HTMLInputElement;
-  const descriptionEl = target.querySelector('#input-desc') as HTMLInputElement;
-  const dateEl = target.querySelector('#input-date') as HTMLInputElement;
-  const categoryEl = target.querySelector(
-    '#input-category'
-  ) as HTMLInputElement;
+  const { idEl, titleEl, descEl, dateEl, categoryEl } = selectFormParts();
 
-  if (!idEl || !titleEl || !descriptionEl || !categoryEl) {
-    console.error('Form elements not found');
+  if (!idEl || !titleEl || !descEl || !categoryEl) {
+    renderTemporaryError('Form elements not found');
     return;
   }
 
@@ -88,7 +79,7 @@ export function updateTask(event: Event): void {
     const updatedTask: ITask = {
       id: idEl.value,
       title: titleEl.value,
-      description: descriptionEl.value,
+      description: descEl.value,
       date: dateEl.value,
       category: categoryEl.value,
       status: previusTask.status,
@@ -108,11 +99,15 @@ export function updateTask(event: Event): void {
       renderNewTask(task);
     });
   } else {
-    console.log('Task not found');
+    renderTemporaryError('Task not found');
   }
 }
 
 export function removeTask(id: string) {
+  if (globalThis.tasks.length === 9) {
+    toggledisableForm(false);
+  }
+
   globalThis.tasks = globalThis.tasks.filter((task) => task.id !== id);
 
   removeRecord(getEmail(), id);

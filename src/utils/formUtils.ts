@@ -138,26 +138,16 @@ export function patchFormToUpdate(task: ITask) {
 }
 
 export function formReset() {
-  const formEl = document.querySelector('#task-form');
+  const { formEl, idEl, titleEl, descEl, dateLabelEl, dateEl, categoryEl } =
+    selectFormParts();
 
   if (formEl) {
-    const idEl = formEl.querySelector('#input-id') as HTMLInputElement;
     idEl.value = '';
-    const titleEl = formEl.querySelector('#input-title') as HTMLInputElement;
     titleEl.value = '';
-    const descEl = formEl.querySelector('#input-desc') as HTMLInputElement;
     descEl.value = '';
-    const dateLabelEl = formEl.querySelector(
-      '#inputCheckboxDate'
-    ) as HTMLInputElement;
-    const dateEl = formEl.querySelector('#input-date') as HTMLInputElement;
 
     dateLabelEl.checked = false;
     toggleDateDisabled(dateEl);
-
-    const categoryEl = formEl.querySelector(
-      '#input-category'
-    ) as HTMLInputElement;
     categoryEl.value = '';
 
     const addBtn = formEl.querySelector('#form-add') as HTMLButtonElement;
@@ -168,4 +158,42 @@ export function formReset() {
     const cancelBtn = formEl.querySelector('#form-cancel') as HTMLButtonElement;
     cancelBtn.disabled = true;
   }
+}
+
+export function selectFormParts(): {
+  formEl: Element | null;
+  idEl: HTMLInputElement;
+  titleEl: HTMLInputElement;
+  descEl: HTMLInputElement;
+  dateLabelEl: HTMLInputElement;
+  dateEl: HTMLInputElement;
+  categoryEl: HTMLInputElement;
+  addBtn: HTMLButtonElement;
+  cancelBtn: HTMLButtonElement;
+} {
+  const formEl = document.querySelector('#task-form') as HTMLFormElement;
+  const idEl = formEl?.querySelector('#input-id') as HTMLInputElement;
+  const titleEl = formEl?.querySelector('#input-title') as HTMLInputElement;
+  const descEl = formEl?.querySelector('#input-desc') as HTMLInputElement;
+  const dateLabelEl = formEl?.querySelector(
+    '#inputCheckboxDate'
+  ) as HTMLInputElement;
+  const dateEl = formEl?.querySelector('#input-date') as HTMLInputElement;
+  const categoryEl = formEl?.querySelector(
+    '#input-category'
+  ) as HTMLInputElement;
+  const addBtn = formEl?.querySelector('#form-add') as HTMLButtonElement;
+  const cancelBtn = formEl?.querySelector('#form-cancel') as HTMLButtonElement;
+
+  return {
+    formEl,
+    idEl,
+    titleEl,
+    descEl,
+    dateLabelEl,
+    dateEl,
+    categoryEl,
+    addBtn,
+    cancelBtn,
+  };
 }

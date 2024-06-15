@@ -5,7 +5,6 @@ import {
   retrieveFromLS,
   saveToLS,
 } from '../utils/localStorageUtils';
-import { FirebaseError } from 'firebase/app';
 import { clearRoot, renderAuthorization, renderForm } from './render';
 
 export function checkTimeLegit() {
