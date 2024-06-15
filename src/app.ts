@@ -5,10 +5,10 @@ import { removeFromLS, retrieveFromLS } from './utils/localStorageUtils';
 export function startApp() {
   console.log('Application started!');
 
-  // globalThis.tasks = [];
   // renderForm();
 
   if (retrieveFromLS('user') && checkTimeLegit()) {
+    globalThis.tasks = [];
     renderForm();
   } else {
     clearAuthData();

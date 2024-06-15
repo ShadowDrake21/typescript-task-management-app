@@ -160,8 +160,12 @@ export function formReset() {
     ) as HTMLInputElement;
     categoryEl.value = '';
 
-    const btn = formEl.querySelector('#form-add') as HTMLButtonElement;
-    btn.innerHTML =
+    const addBtn = formEl.querySelector('#form-add') as HTMLButtonElement;
+    addBtn.innerHTML =
       'Add task<i class="material-icons right ms-2">add_circle</i>';
+    addBtn.disabled = true;
+
+    const cancelBtn = formEl.querySelector('#form-cancel') as HTMLButtonElement;
+    cancelBtn.disabled = true;
   }
 }

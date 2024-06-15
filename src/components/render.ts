@@ -1,7 +1,8 @@
 import { ITask } from '../models/taskModel';
 import { authorize, signOut } from '../services/authService';
+import { retrieveRecords } from '../services/tasksService';
 import { createNewTaskElement, formReset } from '../utils/formUtils';
-import { handleAuthorization, handleSignOut } from './authorization';
+import { getEmail, handleAuthorization, handleSignOut } from './authorization';
 
 import { addTask, updateTask } from './taskManipulations';
 
@@ -47,7 +48,7 @@ export function renderForm() {
   <input type="text" class="d-none" id="input-id" />
   <input type="text" class="task-manager__form-input form-control" id="input-title" required placeholder="Enter a task title..."/>
   <input type="text" class="task-manager__form-input form-control" id="input-desc" required placeholder="Enter a task description..."/>
- <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center">
   <div class="flex-shrink-0 pe-3">
   <label class="form-check-label" for="inputCheckboxDate">
   Does the task have a due date?
@@ -57,10 +58,10 @@ export function renderForm() {
   <input type="date" class="form-control" id="input-date" min="${new Date().toISOString().split('T')[0]}"  required/>
   </div>
   <input type="text" class="task-manager__form-input form-control" id="input-category" required placeholder="Enter a task category..." />
- <button class="btn btn-success d-flex align-items-center justify-content-center" type="submit" id="form-add" name="action">Add task<i class="material-icons right ms-2">add_circle</i></button>
- <button class="btn btn-danger d-flex align-items-center justify-content-center" type="submit" id="form-cancel" name="action">Cancel<i class="material-icons right ms-2">close</i></button>
+  <button class="btn btn-success d-flex align-items-center justify-content-center" type="submit" id="form-add" name="action" disabled>Add task<i class="material-icons right ms-2">add_circle</i></button>
+  <button class="btn btn-danger d-flex align-items-center justify-content-center" type="submit" id="form-cancel" name="action" disabled>Cancel<i class="material-icons right ms-2">close</i></button>
   </div>
- `;
+  `;
 
   const formBtnEl = form.querySelector('#form-add') as HTMLButtonElement;
 
@@ -82,6 +83,25 @@ export function renderForm() {
     }
   );
 
+  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
+  const descEl = form.querySelector('#input-desc') as HTMLInputElement;
+  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
+
+  titleEl.addEventListener('input', () => {
+    toggleDisableAddBtn();
+    toggleDisableCancelBtn();
+  });
+
+  descEl.addEventListener('input', () => {
+    toggleDisableAddBtn();
+    toggleDisableCancelBtn();
+  });
+
+  categoryEl.addEventListener('input', () => {
+    toggleDisableAddBtn();
+    toggleDisableCancelBtn();
+  });
+
   if (root) {
     root.append(form);
     const dateCheckEl = root.querySelector(
@@ -90,6 +110,26 @@ export function renderForm() {
 
     toggleDateDisabled(dateCheckEl);
     listenToDateCheck();
+
+    renderSavedTasks();
+  }
+}
+
+export async function renderSavedTasks() {
+  try {
+    const tasks: ITask[] = await retrieveRecords(getEmail());
+
+    globalThis.tasks = tasks;
+
+    tasks.forEach((task) => {
+      renderNewTask(task);
+    });
+
+    if (tasks.length === 0) {
+      handleEmptyRoot();
+    }
+  } catch (error) {
+    renderTemporaryError('Error during retrieving the saved tasks');
   }
 }
 
@@ -112,6 +152,7 @@ export function renderNewTask(newTask: ITask) {
 
       root.append(newTaskTable);
     }
+    handleEmptyRoot();
   }
 }
 
@@ -165,6 +206,67 @@ export function disableForm() {
   if (cancelBtn) {
     cancelBtn.disabled = true;
   }
+}
+
+export function toggleDisableAddBtn() {
+  const form = document.querySelector('#task-form') as HTMLFormElement;
+  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
+  const descriptionEl = form.querySelector('#input-desc') as HTMLInputElement;
+  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
+  const addBtn = form.querySelector('#form-add') as HTMLButtonElement;
+
+  if (titleEl.value && descriptionEl.value && categoryEl.value) {
+    addBtn.disabled = false;
+  } else {
+    addBtn.disabled = true;
+  }
+}
+
+export function toggleDisableCancelBtn() {
+  const form = document.querySelector('#task-form') as HTMLFormElement;
+  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
+  const descriptionEl = form.querySelector('#input-desc') as HTMLInputElement;
+  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
+  const cancelBtn = form.querySelector('#form-cancel') as HTMLButtonElement;
+
+  if (titleEl.value || descriptionEl.value || categoryEl.value) {
+    cancelBtn.disabled = false;
+  } else {
+    cancelBtn.disabled = true;
+  }
+}
+
+export function handleEmptyRoot() {
+  if (!root) {
+    return;
+  }
+  const emptyMessage = root.querySelector('#empty-message');
+
+  if (!globalThis.tasks || globalThis.tasks.length === 0) {
+    if (!emptyMessage) {
+      const emptyMessageElement = document.createElement('p');
+      emptyMessageElement.id = 'empty-message';
+      emptyMessageElement.classList.add('empty-message');
+      emptyMessageElement.textContent = "You haven't added any task...";
+      root.append(emptyMessageElement);
+    }
+  } else {
+    if (emptyMessage) {
+      emptyMessage.remove();
+    }
+  }
+}
+
+export function renderTemporaryError(message: string) {
+  const errorMessage = document.createElement('div');
+  errorMessage.classList.add('temporary__error-message');
+  errorMessage.textContent = message;
+
+  root?.appendChild(errorMessage);
+
+  setTimeout(() => {
+    errorMessage.remove();
+  }, 5000);
 }
 
 export function handleSignOutBtn() {
