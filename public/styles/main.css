@@ -12,16 +12,40 @@ a:hover {
 }
 
 .header {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
   background-color: #dac0a3;
   padding: 20px 10px;
   margin-bottom: 20px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  min-height: 80px;
+}
+
+#root {
+  position: relative;
+  min-width: 100vw;
+  min-height: 100vh;
+  padding-top: 150px;
+}
+
+#signout-btn {
+  display: none;
+}
+
+#signout-btn.visible {
+  display: block;
 }
 
 .header-title {
   font-weight: 600;
   font-size: 22px;
   line-height: 26px;
+  margin-bottom: 0;
 }
 
 .task-manager__form {
@@ -94,6 +118,24 @@ a:hover {
   gap: 10px;
 }
 
+.google-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.auth-error__message {
+  color: red;
+  font-size: 22px;
+  line-height: 26px;
+  font-weight: 600;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 #task-table {
   max-height: 500px;
   overflow-y: auto;
@@ -107,4 +149,38 @@ a:hover {
   padding: 20px 10px;
   background-color: #dac0a3;
   text-align: center;
+}
+
+.loader {
+  width: 120px;
+  height: 22px;
+  border-radius: 40px;
+  color: #514b82;
+  border: 2px solid;
+  position: relative;
+}
+.loader::before {
+  content: '';
+  position: absolute;
+  margin: 2px;
+  width: 25%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: inherit;
+  background: currentColor;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  50% {
+    left: 100%;
+    transform: translateX(calc(-100% - 4px));
+  }
+}
+
+.auth-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
