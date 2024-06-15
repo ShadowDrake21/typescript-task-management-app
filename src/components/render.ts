@@ -1,10 +1,43 @@
 import { ITask } from '../models/taskModel';
+import { authorize, signOut } from '../services/authService';
 import { createNewTaskElement, formReset } from '../utils/formUtils';
+import { handleAuthorization, handleSignOut } from './authorization';
+
 import { addTask, updateTask } from './taskManipulations';
 
 const root = document.getElementById('root');
+handleSignOutBtn();
+
+export function renderAuthorization() {
+  const signOutBtn = document.querySelector(
+    '#signout-btn'
+  ) as HTMLButtonElement;
+
+  if (signOutBtn && signOutBtn.classList.contains('visible')) {
+    signOutBtn.classList.remove('visible');
+  }
+
+  const googleBtn: HTMLButtonElement = document.createElement('button');
+  googleBtn.classList.add('btn', 'btn-primary', 'google-btn');
+  googleBtn.textContent = 'Sign-in with Google';
+  googleBtn.addEventListener('click', (event) => {
+    handleAuthorization();
+  });
+
+  if (root) {
+    root.append(googleBtn);
+  }
+}
 
 export function renderForm() {
+  const signOutBtn = document.querySelector(
+    '#signout-btn'
+  ) as HTMLButtonElement;
+
+  if (signOutBtn) {
+    signOutBtn.classList.add('visible');
+  }
+
   const form: HTMLFormElement = document.createElement('form');
   form.classList.add('task-manager__form');
   form.id = 'task-form';
@@ -134,10 +167,27 @@ export function disableForm() {
   }
 }
 
+export function handleSignOutBtn() {
+  const signOutBtn = document.querySelector(
+    '#signout-btn'
+  ) as HTMLButtonElement;
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', (event) => {
+      handleSignOut();
+    });
+  }
+}
+
 export function clearTaskTable() {
   const taskTable = root?.querySelector('#task-table') as HTMLDivElement;
 
   if (taskTable) {
     taskTable.innerText = '';
+  }
+}
+
+export function clearRoot() {
+  if (root) {
+    root.innerHTML = '';
   }
 }

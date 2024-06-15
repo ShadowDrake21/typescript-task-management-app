@@ -62,6 +62,7 @@
     "file-entry-cache": "^6.0.1",
     "fill-range": "^7.1.1",
     "find-up": "^5.0.0",
+    "firebase": "^10.12.2",
     "flat-cache": "^3.2.0",
     "flatted": "^3.3.1",
     "fs.realpath": "^1.0.0",
