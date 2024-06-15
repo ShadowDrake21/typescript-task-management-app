@@ -1,7 +1,10 @@
 import { ITask } from '../models/taskModel';
-import { authorize, signOut } from '../services/authService';
 import { retrieveRecords } from '../services/tasksService';
-import { createNewTaskElement, formReset } from '../utils/formUtils';
+import {
+  createNewTaskElement,
+  formReset,
+  selectFormParts,
+} from '../utils/formUtils';
 import { getEmail, handleAuthorization, handleSignOut } from './authorization';
 
 import { addTask, updateTask } from './taskManipulations';
@@ -71,7 +74,6 @@ export function renderForm() {
     if (formBtnEl.textContent?.includes('Add')) {
       addTask(event);
     } else {
-      console.log('updateTask');
       updateTask(event);
     }
   });
@@ -83,25 +85,6 @@ export function renderForm() {
     }
   );
 
-  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
-  const descEl = form.querySelector('#input-desc') as HTMLInputElement;
-  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
-
-  titleEl.addEventListener('input', () => {
-    toggleDisableAddBtn();
-    toggleDisableCancelBtn();
-  });
-
-  descEl.addEventListener('input', () => {
-    toggleDisableAddBtn();
-    toggleDisableCancelBtn();
-  });
-
-  categoryEl.addEventListener('input', () => {
-    toggleDisableAddBtn();
-    toggleDisableCancelBtn();
-  });
-
   if (root) {
     root.append(form);
     const dateCheckEl = root.querySelector(
@@ -110,9 +93,20 @@ export function renderForm() {
 
     toggleDateDisabled(dateCheckEl);
     listenToDateCheck();
-
     renderSavedTasks();
   }
+
+  const { titleEl, descEl, dateLabelEl, dateEl, categoryEl } =
+    selectFormParts();
+
+  const inputs = [titleEl, descEl, dateLabelEl, dateEl, categoryEl];
+
+  inputs.forEach((input) => {
+    input.addEventListener('input', () => {
+      toggleDisableAddBtn();
+      toggleDisableCancelBtn();
+    });
+  });
 }
 
 export async function renderSavedTasks() {
@@ -128,13 +122,16 @@ export async function renderSavedTasks() {
     if (tasks.length === 0) {
       handleEmptyRoot();
     }
+
+    if (tasks.length === 9) {
+      toggledisableForm(true);
+    }
   } catch (error) {
     renderTemporaryError('Error during retrieving the saved tasks');
   }
 }
 
 export function renderNewTask(newTask: ITask) {
-  console.log('renderNewTask', newTask);
   if (root) {
     const tasksTable = root.querySelector('#task-table');
 
@@ -147,7 +144,6 @@ export function renderNewTask(newTask: ITask) {
       newTaskTable.classList.add('mt-4');
 
       const newTaskEl = createNewTaskElement(newTask);
-      console.log('newTaskEl', newTaskEl);
       newTaskTable.appendChild(newTaskEl);
 
       root.append(newTaskTable);
@@ -179,43 +175,29 @@ export function toggleDateDisabled(dateCheckEl: HTMLInputElement) {
   }
 }
 
-export function disableForm() {
-  const form = document.querySelector('#task-form') as HTMLFormElement;
-  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
-  const descriptionEl = form.querySelector('#input-desc') as HTMLInputElement;
-  const dateEl = form.querySelector('#input-date') as HTMLInputElement;
-  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
-  const addBtn = form.querySelector('#form-add') as HTMLButtonElement;
-  const cancelBtn = form.querySelector('#form-cancel') as HTMLButtonElement;
+export function toggledisableForm(value: boolean) {
+  const {
+    titleEl,
+    descEl,
 
-  if (titleEl) {
-    titleEl.disabled = true;
-  }
-  if (descriptionEl) {
-    descriptionEl.disabled = true;
-  }
-  if (dateEl) {
-    dateEl.disabled = true;
-  }
-  if (categoryEl) {
-    categoryEl.disabled = true;
-  }
-  if (addBtn) {
-    addBtn.disabled = true;
-  }
-  if (cancelBtn) {
-    cancelBtn.disabled = true;
-  }
+    categoryEl,
+    addBtn,
+    cancelBtn,
+  } = selectFormParts();
+
+  const inputs = [titleEl, descEl, categoryEl, addBtn, cancelBtn];
+
+  inputs.forEach((input) => {
+    if (input) {
+      input.disabled = value;
+    }
+  });
 }
 
 export function toggleDisableAddBtn() {
-  const form = document.querySelector('#task-form') as HTMLFormElement;
-  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
-  const descriptionEl = form.querySelector('#input-desc') as HTMLInputElement;
-  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
-  const addBtn = form.querySelector('#form-add') as HTMLButtonElement;
+  const { titleEl, descEl, categoryEl, addBtn } = selectFormParts();
 
-  if (titleEl.value && descriptionEl.value && categoryEl.value) {
+  if (titleEl.value && descEl.value && categoryEl.value) {
     addBtn.disabled = false;
   } else {
     addBtn.disabled = true;
@@ -223,13 +205,9 @@ export function toggleDisableAddBtn() {
 }
 
 export function toggleDisableCancelBtn() {
-  const form = document.querySelector('#task-form') as HTMLFormElement;
-  const titleEl = form.querySelector('#input-title') as HTMLInputElement;
-  const descriptionEl = form.querySelector('#input-desc') as HTMLInputElement;
-  const categoryEl = form.querySelector('#input-category') as HTMLInputElement;
-  const cancelBtn = form.querySelector('#form-cancel') as HTMLButtonElement;
+  const { titleEl, descEl, dateEl, categoryEl, cancelBtn } = selectFormParts();
 
-  if (titleEl.value || descriptionEl.value || categoryEl.value) {
+  if (titleEl.value || descEl.value || dateEl.value || categoryEl.value) {
     cancelBtn.disabled = false;
   } else {
     cancelBtn.disabled = true;
