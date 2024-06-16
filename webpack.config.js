@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts',
+  entry: 'src/index.ts',
   module: {
     rules: [
       {
@@ -26,7 +26,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: 'public/index.html',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'public/assets', to: 'assets' }],
     }),
   ],
   devServer: {
