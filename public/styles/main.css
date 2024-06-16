@@ -1,6 +1,7 @@
 body {
   background-color: #f8f4e1;
   min-height: 100vh;
+  position: relative;
 }
 
 a {
@@ -28,9 +29,9 @@ a:hover {
 
 #root {
   position: relative;
-  min-width: 100vw;
   min-height: 100vh;
   padding-top: 150px;
+  overflow: hidden;
 }
 
 #signout-btn {
@@ -137,7 +138,7 @@ a:hover {
 }
 
 #task-table {
-  max-height: 500px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
@@ -150,13 +151,14 @@ a:hover {
 }
 
 .footer {
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   padding: 20px 10px;
   background-color: #dac0a3;
   text-align: center;
+  border-top: 1px solid #000;
 }
 
 .loader {
@@ -204,4 +206,106 @@ a:hover {
   background-color: red;
   color: #fff;
   font-weight: 600;
+}
+
+@media (max-width: 1000px) {
+  .header-title {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .footer {
+    padding: 10px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  #root {
+    position: relative;
+
+    padding-top: 110px;
+  }
+
+  .task-manager__form-inner {
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+  }
+
+  .task-table {
+    margin-bottom: 50px;
+  }
+}
+
+@media (max-width: 800px) {
+  #root {
+    padding-bottom: 40px;
+  }
+
+  .single-task {
+    flex-direction: column;
+  }
+
+  .single-task__inner {
+    text-align: center;
+    align-items: center;
+  }
+
+  .single-task__btns {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+  }
+
+  #root {
+    padding-top: 140px;
+  }
+
+  .task-manager__form-inner {
+    gap: 0;
+  }
+
+  .data-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .empty-message {
+    font-size: 20px;
+    line-height: 24px;
+    padding-top: 30px;
+  }
+}
+
+@media (max-width: 500px) {
+  .google-btn {
+    width: 300px;
+  }
+}
+
+@media (max-width: 420px) {
+  .header {
+    gap: 5px;
+  }
+
+  .header-title {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .task-manager__form-inner {
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+    gap: 10px;
+  }
+
+  .table-info {
+    flex-direction: column;
+  }
 }
