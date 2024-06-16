@@ -13,6 +13,8 @@ import {
   handleEmptyRoot,
   renderNewTask,
   renderTemporaryError,
+  renderTableInfo,
+  rerenderTableInfo,
 } from './render';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -23,8 +25,8 @@ export async function addTask(event: Event): Promise<void> {
     id: uuidv4(),
     title: titleEl.value,
     description:
-      descEl.value.length > 300
-        ? descEl.value.slice(0, 300) + '...'
+      descEl.value.length > 200
+        ? descEl.value.slice(0, 200) + '...'
         : descEl.value,
     category: categoryEl.value,
     status: false,
@@ -44,6 +46,7 @@ export async function addTask(event: Event): Promise<void> {
 
   await setRecord(getEmail(), newTask)
     .then(() => {
+      rerenderTableInfo();
       renderNewTask(newTask);
     })
     .catch((err: FirebaseError) => {
@@ -113,6 +116,7 @@ export function removeTask(id: string) {
   removeRecord(getEmail(), id);
 
   clearTaskTable();
+  rerenderTableInfo();
   globalThis.tasks.forEach((task) => {
     renderNewTask(task);
   });

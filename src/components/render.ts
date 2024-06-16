@@ -51,8 +51,8 @@ export function renderForm() {
   <input type="text" class="d-none" id="input-id" />
   <input type="text" class="task-manager__form-input form-control" id="input-title" required placeholder="Enter a task title..."/>
   <input type="text" class="task-manager__form-input form-control" id="input-desc" required placeholder="Enter a task description..."/>
-  <div class="d-flex align-items-center">
-  <div class="flex-shrink-0 pe-3">
+  <div class="d-flex align-items-center data-block">
+  <div class="flex-shrink-0 pe-0 pe-sm-3">
   <label class="form-check-label" for="inputCheckboxDate">
   Does the task have a due date?
   </label>
@@ -87,6 +87,7 @@ export function renderForm() {
 
   if (root) {
     root.append(form);
+
     const dateCheckEl = root.querySelector(
       '#inputCheckboxDate'
     ) as HTMLInputElement;
@@ -109,11 +110,45 @@ export function renderForm() {
   });
 }
 
+export async function renderTableInfo() {
+  const block = document.createElement('div');
+  block.classList.add('d-flex', 'pt-3', 'table-info');
+  const currentValue = document.createElement('p');
+  currentValue.id = 'currentValue';
+  currentValue.textContent = (
+    'Tasks already in table: ' + globalThis.tasks.length
+  ).toString();
+  currentValue.classList.add('pe-4');
+
+  const allValues = document.createElement('p');
+  allValues.id = 'allValues';
+  allValues.textContent = 'Allowed number of tasks: 9';
+
+  block.append(currentValue, allValues);
+
+  if (root) {
+    root.appendChild(block);
+  }
+}
+
+export async function rerenderTableInfo() {
+  const currentValueMessage = document.querySelector(
+    '#currentValue'
+  ) as HTMLParagraphElement;
+
+  if (currentValueMessage) {
+    currentValueMessage.textContent = (
+      'Tasks already in table: ' + globalThis.tasks.length
+    ).toString();
+  }
+}
+
 export async function renderSavedTasks() {
   try {
     const tasks: ITask[] = await retrieveRecords(getEmail());
 
     globalThis.tasks = tasks;
+    renderTableInfo();
 
     tasks.forEach((task) => {
       renderNewTask(task);
@@ -141,7 +176,6 @@ export function renderNewTask(newTask: ITask) {
     } else {
       const newTaskTable = document.createElement('div');
       newTaskTable.id = 'task-table';
-      newTaskTable.classList.add('mt-4');
 
       const newTaskEl = createNewTaskElement(newTask);
       newTaskTable.appendChild(newTaskEl);
